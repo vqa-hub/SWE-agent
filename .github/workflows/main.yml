@@ -1,0 +1,15 @@
+name: Download and Package Image
+on: workflow_dispatch # 手动触发
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull Image
+        run: docker pull sweagent/swe-agent:latest
+      - name: Save Image
+        run: docker save sweagent/swe-agent:latest | gzip > swe-agent.tar.gz
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: swe-agent-tar
+          path: swe-agent.tar.gz

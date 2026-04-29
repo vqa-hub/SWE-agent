@@ -10,9 +10,9 @@ jobs:
       # 矩阵配置：在这里列出所有你想要拉取的镜像
       matrix:
         include:
-          - remote: "mswebench/openmathlib_m_openblas:pr-4729"
-          - remote: "mswebench/openmathlib_m_openblas:pr-4727"
-          - remote: "mswebench/openmathlib_m_openblas:pr-4419"
+          - remote: "mswebench/facebook_m_zstd:pr-3470"
+          - remote: "mswebench/facebook_m_zstd:pr-3441"
+          - remote: "mswebench/facebook_m_zstd:pr-3175"
 
     steps:
       - name: Check Secrets
@@ -27,11 +27,17 @@ jobs:
           username: ${{ secrets.ALIRUN_USER }}
           password: ${{ secrets.ALIRUN_PWD }}
 
-      - name: Pull, Tag and Push
-        run: |
-          # 强制指定架构并拉取
-          docker pull --platform linux/amd64 ${{ matrix.remote }}
+      # - name: Pull, Tag and Push
+      #   run: |
+      #     # 强制指定架构并拉取
+      #     docker pull --platform linux/amd64 ${{ matrix.remote }}
           
-          # 打标签并推送到阿里云 (替换为你自己的命名空间)
-          docker tag ${{ matrix.remote }} crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/${{ matrix.remote }}
-          docker push crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/${{ matrix.remote }}
+      #     # 打标签并推送到阿里云 (替换为你自己的命名空间)
+      #     docker tag ${{ matrix.remote }} crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/${{ matrix.remote }}
+      #     docker push crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/${{ matrix.remote }}
+      
+      - name: Sync Image with Skopeo
+        run: |
+          skopeo copy --all --src-tls-verify=false \
+          docker://docker.io/${{ matrix.remote }} \
+          docker://crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/${{ matrix.remote }}

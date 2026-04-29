@@ -1,0 +1,54 @@
+name: Bulk Docker Image Sync Parallel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # 阶段一：解析文本文件并生成矩阵
+  set-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - id: set-matrix
+        run: |
+          # 1. 读取 images.txt
+          # 2. 过滤空行和注释
+          # 3. 转换成 JSON 数组格式: ["img1", "img2"]
+          IMAGES=$(jq -R -s -c 'split("\n") | map(select(length > 0))' docker_images.txt)
+          echo "matrix=${IMAGES}" >> $GITHUB_OUTPUT
+
+  # 阶段二：根据生成的矩阵并行执行
+  sync-images:
+    needs: set-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false      # 关键：即使一个镜像同步失败，也不要停止其他的
+      max-parallel: 20      # 限制并发数，防止触发 API 限制
+      matrix:
+        remote: ${{ fromJson(needs.set-matrix.outputs.matrix) }}
+
+    steps:
+      - name: Login to Aliyun
+        uses: docker/login-action@v2
+        with:
+          registry: crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com
+          username: ${{ secrets.ALIRUN_USER }}
+          password: ${{ secrets.ALIRUN_PWD }}
+      
+      - name: Sync Image with Skopeo
+        run: |
+          # 增加一个检查逻辑：如果阿里云已经有了，就跳过，节省分钟数
+          if skopeo inspect --dest-creds "${{ secrets.ALIRUN_USER }}:${{ secrets.ALIRUN_PWD }}" \
+            docker://crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/${{ matrix.remote }} > /dev/null 2>&1; then
+            echo "镜像 ${{ matrix.remote }} 已存在，跳过同步。"
+          else
+            skopeo copy --all --src-tls-verify=false \
+            --src-creds "${{ secrets.DOCKERHUB_USER }}:${{ secrets.DOCKERHUB_TOKEN }}" \
+            --dest-creds "${{ secrets.ALIRUN_USER }}:${{ secrets.ALIRUN_PWD }}" \
+            docker://docker.io/${{ matrix.remote }} \
+            docker://crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/${{ matrix.remote }}
+          fi

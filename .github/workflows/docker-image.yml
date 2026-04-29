@@ -1,0 +1,26 @@
+name: Docker Image Sync
+
+on:
+  workflow_dispatch: # 允许你手动点击按钮触发同步
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Aliyun
+        uses: docker/login-action@v2
+        with:
+          registry: registry.cn-hangzhou.aliyuncs.com
+          username: ${{ secrets.ALIRUN_USER }}
+          password: ${{ secrets.ALIRUN_PWD }}
+
+      - name: Pull and Push
+        run: |
+          # 1. 拉取指定的 x86 架构镜像
+          docker pull --platform linux/amd64 mswebench/fluent_m_fluent-bit:pr-9590
+          
+          # 2. 重新打标签 (请替换为你自己的阿里云仓库路径)
+          docker tag mswebench/fluent_m_fluent-bit:pr-9590 registry.cn-hangzhou.aliyuncs.com/mswebench/fluent_m_fluent-bit:pr-9590
+          
+          # 3. 推送到阿里云
+          docker push registry.cn-hangzhou.aliyuncs.com/mswebench/fluent_m_fluent-bit:pr-9590

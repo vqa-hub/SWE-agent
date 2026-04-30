@@ -46,7 +46,7 @@ jobs:
             docker://crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/${{ matrix.remote }} > /dev/null 2>&1; then
             echo "镜像 ${{ matrix.remote }} 已存在，跳过同步。"
           else
-            skopeo copy --all --src-tls-verify=false \
+            skopeo copy --format v2s2 --override-arch amd64 --src-tls-verify=false \
             --src-creds "${{ secrets.DOCKERHUB_USER }}:${{ secrets.DOCKERHUB_TOKEN }}" \
             --dest-creds "${{ secrets.ALIRUN_USER }}:${{ secrets.ALIRUN_PWD }}" \
             docker://docker.io/${{ matrix.remote }} \

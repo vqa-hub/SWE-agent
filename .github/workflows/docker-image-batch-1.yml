@@ -18,7 +18,7 @@ jobs:
           # 1. 读取 images.txt
           # 2. 过滤空行和注释
           # 3. 转换成 JSON 数组格式: ["img1", "img2"]
-          IMAGES=$(jq -R -s -c 'split("\n") | map(select(length > 0))' train-00004-of-00048.txt)
+          IMAGES=$(jq -R -s -c 'split("\n") | map(select(length > 0))' train-00005-of-00048.txt)
           echo "matrix=${IMAGES}" >> $GITHUB_OUTPUT
 
   # 阶段二：根据生成的矩阵并行执行

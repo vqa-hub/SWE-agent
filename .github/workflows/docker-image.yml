@@ -7,6 +7,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: 安装 mc (MinIO Client)
+        run: |
+          curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
+          chmod +x /usr/local/bin/mc
+      
       - name: Login to ydy
         run: 
           mc alias set yidongyun https://eos-huhehaote-1.cmecloud.cn MKGF0ECFDCVJKGB33XPF MQbC0ZWz8bwVnN2c18UbxlMUWBzo5bnzyxPQtyJl

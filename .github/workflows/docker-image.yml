@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: 安装 mc (MinIO Client)
         run: |
-          curl -L -o /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
+          wget -O /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x /usr/local/bin/mc
           mc --version
           

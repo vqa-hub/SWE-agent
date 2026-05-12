@@ -9,9 +9,10 @@ jobs:
     steps:
       - name: 安装 mc (MinIO Client)
         run: |
-          curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
+          curl -L -o /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x /usr/local/bin/mc
-      
+          mc --version
+          
       - name: Login to ydy
         run: 
           mc alias set yidongyun https://eos-huhehaote-1.cmecloud.cn MKGF0ECFDCVJKGB33XPF MQbC0ZWz8bwVnN2c18UbxlMUWBzo5bnzyxPQtyJl

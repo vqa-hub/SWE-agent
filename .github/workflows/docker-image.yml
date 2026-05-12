@@ -28,7 +28,7 @@ jobs:
           docker save -o fluent__fluent-bit-9500.tar mswebench/fluent_m_fluent-bit:pr-9590
 
           # 传到移动云对象存储
-          mc cp fluent__fluent-bit-9500.tar ydy/cmjt-code/images-multilingual/
+          mc cp fluent__fluent-bit-9500.tar yidongyun/cmjt-code/images-multilingual/
           
           # 3. 推送到阿里云
           # docker push crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/mswebench/fluent_m_fluent-bit:pr-9590

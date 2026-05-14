@@ -1,50 +1,53 @@
 name: Docker Image Sync
 
 on:
-  workflow_dispatch: # 允许你手动点击按钮触发同步
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # ================= 安全清理（只删没用的，绝不碰Docker）=================
+      - name: 释放磁盘空间（安全版）
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/powershell
+          sudo apt clean
+          df -h  # 查看空间
+          pwd
+
+      # # ================= 安装工具 =================
       # - name: 安装 mc (MinIO Client)
       #   run: |
       #     wget -O /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
       #     chmod +x /usr/local/bin/mc
       #     mc --version
           
-      # - name: Login to ydy
-      #   run: 
+      # - name: 配置移动云
+      #   run: |
       #     mc alias set yidongyun https://eos-huhehaote-1.cmecloud.cn MKGF0ECFDCVJKGB33XPF MQbC0ZWz8bwVnN2c18UbxlMUWBzo5bnzyxPQtyJl
 
-      - name: Free up disk space
+      # ================= 拉取镜像 =================
+      - name: 拉取 Docker 镜像
         run: |
-          sudo rm -rf /usr/local/lib/android \
-                       /usr/share/dotnet \
-                       /usr/share/swift \
-                       /opt/ghc \
-                       /usr/local/share/powershell \
-                       /var/lib/docker
-          df -h
-                       
-      - name: Pull and Push
-        run: |
-          # 1. 拉取指定的 x86 架构镜像
           docker pull --platform linux/amd64 lmsysorg/sglang:deepseek-v4-hopper
-          
-          # 2. 重新打标签 (请替换为你自己的阿里云仓库路径)
-          
-          # docker tag mswebench/fluent_m_fluent-bit:pr-9590 crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/mswebench/fluent_m_fluent-bit:pr-9590
+
+      # ================= 打包 =================
+      - name: 保存为 tar 包
+        run: |
           docker save -o deepseek-v4-hopper.tar lmsysorg/sglang:deepseek-v4-hopper
 
-          # 传到移动云对象存储
-          # mc cp deepseek-v4-hopper.tar  yidongyun/cmjt-code/
-          
-          # 3. 推送到阿里云
-          # docker push crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/mswebench/fluent_m_fluent-bit:pr-9590
-
-      - name: 上传镜像tar包
+      # ================= 上传 =================
+      - name: 上传到 GitHub Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: deepseek-v4-hopper
           path: deepseek-v4-hopper.tar
+
+      # 想直接传到移动云就打开下面这段（更快）
+      # - name: 上传到移动云对象存储
+      #   run: |
+      #     mc cp deepseek-v4-hopper.tar yidongyun/cmjt-code/

@@ -22,7 +22,7 @@ jobs:
       - name: Login to Aliyun
         uses: docker/login-action@v2
         with:
-          registry: crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com
+          registry: docke-images-registry.cn-hangzhou.cr.aliyuncs.com
           username: ${{ secrets.ALIRUN_USER }}
           password: ${{ secrets.ALIRUN_PWD }}
 
@@ -41,4 +41,4 @@ jobs:
           --src-creds "${{ secrets.DOCKERHUB_USER }}:${{ secrets.DOCKERHUB_TOKEN }}" \
           --dest-creds "${{ secrets.ALIRUN_USER }}:${{ secrets.ALIRUN_PWD }}" \
           docker://docker.io/${{ matrix.remote }} \
-          docker://crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/${{ matrix.remote }}
+          docker://docke-images-registry.cn-hangzhou.cr.aliyuncs.com/${{ matrix.remote }}

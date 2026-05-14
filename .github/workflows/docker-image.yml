@@ -7,16 +7,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 安装 mc (MinIO Client)
-        run: |
-          wget -O /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
-          chmod +x /usr/local/bin/mc
-          mc --version
+      # - name: 安装 mc (MinIO Client)
+      #   run: |
+      #     wget -O /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
+      #     chmod +x /usr/local/bin/mc
+      #     mc --version
           
-      - name: Login to ydy
-        run: 
-          mc alias set yidongyun https://eos-huhehaote-1.cmecloud.cn MKGF0ECFDCVJKGB33XPF MQbC0ZWz8bwVnN2c18UbxlMUWBzo5bnzyxPQtyJl
+      # - name: Login to ydy
+      #   run: 
+      #     mc alias set yidongyun https://eos-huhehaote-1.cmecloud.cn MKGF0ECFDCVJKGB33XPF MQbC0ZWz8bwVnN2c18UbxlMUWBzo5bnzyxPQtyJl
 
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android \
+                       /usr/share/dotnet \
+                       /usr/share/swift \
+                       /opt/ghc \
+                       /usr/local/share/powershell \
+                       /var/lib/docker
+          df -h
+                       
       - name: Pull and Push
         run: |
           # 1. 拉取指定的 x86 架构镜像

@@ -32,3 +32,9 @@ jobs:
           
           # 3. 推送到阿里云
           # docker push crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/mswebench/fluent_m_fluent-bit:pr-9590
+
+      - name: 上传镜像tar包
+        uses: actions/upload-artifact@v4
+        with:
+          name: deepseek-v4-hopper
+          path: deepseek-v4-hopper.tar

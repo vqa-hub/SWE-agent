@@ -28,7 +28,7 @@ jobs:
           docker save -o deepseek-v4-hopper.tar lmsysorg/sglang:deepseek-v4-hopper
 
           # 传到移动云对象存储
-          mc cp deepseek-v4-hopper.tar  yidongyun/cmjt-code/
+          # mc cp deepseek-v4-hopper.tar  yidongyun/cmjt-code/
           
           # 3. 推送到阿里云
           # docker push crpi-xgbpniicu7dny74q.cn-hangzhou.personal.cr.aliyuncs.com/mswebench/fluent_m_fluent-bit:pr-9590
